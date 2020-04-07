@@ -3,7 +3,7 @@ import {
   BrowserRouter as Router,
   Route,
   Link,
-  withRouter
+  withRouter,
 } from "react-router-dom";
 import { Container, Menu, Segment } from "semantic-ui-react";
 
@@ -16,8 +16,12 @@ import PrivateRoute from "./components/PrivateRoute";
 
 import * as api from "./api";
 
-class App extends React.Component {
-  constructor(props) {
+type Props = {};
+
+type State = { isAuthenticated: boolean; user?: api.User; token?: string };
+
+class App extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     const token = sessionStorage.getItem("token");
     const user = sessionStorage.getItem("user");
@@ -25,18 +29,22 @@ class App extends React.Component {
       this.state = {
         isAuthenticated: true,
         token,
-        user: JSON.parse(user)
+        user: JSON.parse(user),
       };
     } else {
       this.state = {
         isAuthenticated: false,
         token: undefined,
-        user: undefined
+        user: undefined,
       };
     }
   }
 
-  authenticate = (login, password, callback) => {
+  authenticate = (
+    login: string,
+    password: string,
+    callback: (error: Error | null) => void
+  ) => {
     api
       .login(login, password)
       .then(({ token, owner }) => {
@@ -45,14 +53,14 @@ class App extends React.Component {
         sessionStorage.setItem("user", JSON.stringify(owner));
         callback(null);
       })
-      .catch(error => callback(error));
+      .catch((error) => callback(error));
   };
 
-  signout = callback => {
+  signout = (callback: () => void) => {
     this.setState({
       isAuthenticated: false,
       token: undefined,
-      user: undefined
+      user: undefined,
     });
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("user");
@@ -107,13 +115,13 @@ class App extends React.Component {
           <Route
             exact
             path="/"
-            render={props => (
+            render={(props) => (
               <Home {...props} isAuthenticated={isAuthenticated} />
             )}
           />
           <Route
             path="/login"
-            render={props => (
+            render={(props) => (
               <Login {...props} authenticate={this.authenticate} />
             )}
           />

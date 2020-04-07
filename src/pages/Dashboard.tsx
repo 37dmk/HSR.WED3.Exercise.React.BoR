@@ -5,7 +5,7 @@ import {
   Header,
   Dimmer,
   Loader,
-  Segment
+  Segment,
 } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
@@ -16,23 +16,28 @@ import {
   getAccountDetails,
   getAccount,
   transfer,
-  getTransactions
+  getTransactions,
+  AccountNr,
+  User,
+  Transaction,
 } from "../api";
 
-function Dashboard({ token }) {
-  const [user, setUser] = useState(undefined);
-  const [transactions, setTransactions] = useState(undefined);
-  const [amount, setAmount] = useState(undefined);
+function Dashboard({ token }: { token: string }) {
+  const [user, setUser] = useState<User | undefined>(undefined);
+  const [transactions, setTransactions] = useState<Transaction[] | undefined>(
+    undefined
+  );
+  const [amount, setAmount] = useState<number | undefined>(undefined);
 
-  const isValidTargetAccount = accountNr => {
+  const isValidTargetAccount = (accountNr: AccountNr) => {
     return getAccount(accountNr, token).then(
-      result => true,
-      failure => false
+      () => true,
+      () => false
     );
   };
 
-  const handleSubmit = (target, amount) => {
-    transfer(target, amount, token).then(result => {
+  const handleSubmit = (target: AccountNr, amount: number) => {
+    transfer(target, amount, token).then(() => {
       // Transfer succeeded, we just re-fetch the account details
       // instead of calculating the balance ourselves
       getAccountDetails(token).then(({ amount, owner: user }) => {
@@ -63,7 +68,7 @@ function Dashboard({ token }) {
     }
   }, [token, transactions]);
 
-  if (!user || !transactions) {
+  if (!user || !transactions || !amount) {
     return (
       <Dimmer active inverted>
         <Loader inverted>Loading</Loader>

@@ -5,24 +5,37 @@ import {
   Dimmer,
   Loader,
   Segment,
-  Button
+  Button,
 } from "semantic-ui-react";
 import Moment from "moment";
 
-import { getTransactions } from "../api";
+import { getTransactions, User, Transaction } from "../api";
 import { YearDropdown } from "./YearDropdown";
 import { MonthDropdown } from "./MonthDropdown";
-import { PaginagetTransactionsTable } from "./PaginagetTransactionsTable";
+import { PaginatedTransactionsTable } from "./PaginatedTransactionsTable";
 
-class Transactions extends React.Component {
+type Props = {
+  token: string;
+  user?: User;
+};
+
+type State = {
+  transactions?: Transaction[];
+  filterByMonth?: string;
+  filterByYear?: string;
+  skip: number;
+  total: number;
+};
+
+class Transactions extends React.Component<Props, State> {
   itemsPerPage = 10;
 
-  state = {
+  state: State = {
     transactions: undefined,
     filterByMonth: undefined,
     filterByYear: undefined,
     skip: 0,
-    total: 0
+    total: 0,
   };
 
   componentDidMount() {
@@ -64,11 +77,17 @@ class Transactions extends React.Component {
     );
   };
 
-  handleYearFilterChanged = (event, { value }) => {
+  handleYearFilterChanged = (
+    event: React.SyntheticEvent<HTMLElement, Event>,
+    value: string | undefined
+  ) => {
     this.setState({ filterByYear: value, skip: 0 }, this.fetchTransactions);
   };
 
-  handleMonthFilterChanged = (event, { value }) => {
+  handleMonthFilterChanged = (
+    event: React.SyntheticEvent<HTMLElement, Event>,
+    value: string | undefined
+  ) => {
     this.setState({ filterByMonth: value, skip: 0 }, this.fetchTransactions);
   };
 
@@ -86,7 +105,7 @@ class Transactions extends React.Component {
       filterByMonth,
       filterByYear,
       skip,
-      total
+      total,
     } = this.state;
 
     if (!transactions) {
@@ -101,7 +120,7 @@ class Transactions extends React.Component {
       <Segment.Group>
         <Segment>
           <Header as="h1">
-            All Transaktionen des Accounts {user.accountNr}
+            {user && <>Alle Transaktionen des Accounts {user.accountNr}</>}
           </Header>
         </Segment>
         <Segment>
@@ -123,7 +142,7 @@ class Transactions extends React.Component {
             </Grid.Column>
           </Grid>
           {transactions.length > 0 ? (
-            <PaginagetTransactionsTable
+            <PaginatedTransactionsTable
               user={user}
               transactions={transactions}
               skip={skip}

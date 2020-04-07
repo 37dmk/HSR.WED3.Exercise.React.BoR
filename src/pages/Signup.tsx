@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, SyntheticEvent } from "react";
 import { Redirect, Link } from "react-router-dom";
 import { Button, Grid, Header } from "semantic-ui-react";
 import { Form, Segment, Input, Message } from "semantic-ui-react";
@@ -13,10 +13,10 @@ function Signup() {
   const [error, setError] = useState(null);
   const [redirectToReferrer, setRedirectToReferrrer] = useState(false);
 
-  const onSubmit = event => {
+  const onSubmit = (event: SyntheticEvent) => {
     event.preventDefault();
     signup(login, firstname, lastname, password)
-      .then(result => {
+      .then(() => {
         setRedirectToReferrrer(true);
         setError(null);
       })
@@ -31,12 +31,12 @@ function Signup() {
     <Grid className="LoginScreen" verticalAlign="middle" centered={true}>
       <Grid.Column>
         <Header as="h2" content="Bank of Rapperswil" />
-        <Form size="large" error={error}>
+        <Form size="large" error={!!error}>
           <Segment stacked={true}>
             <Header as="h3" content="Registrieren" />
             <Form.Field>
               <Input
-                onChange={event => setLogin(event.target.value)}
+                onChange={(event) => setLogin(event.target.value)}
                 icon="user"
                 iconPosition="left"
                 placeholder="Login"
@@ -45,7 +45,7 @@ function Signup() {
             </Form.Field>
             <Form.Field>
               <Input
-                onChange={event => setFirstname(event.target.value)}
+                onChange={(event) => setFirstname(event.target.value)}
                 icon="user"
                 iconPosition="left"
                 placeholder="Vorname"
@@ -54,7 +54,7 @@ function Signup() {
             </Form.Field>
             <Form.Field>
               <Input
-                onChange={event => setLastname(event.target.value)}
+                onChange={(event) => setLastname(event.target.value)}
                 icon="user"
                 iconPosition="left"
                 placeholder="Nachname"
@@ -63,7 +63,7 @@ function Signup() {
             </Form.Field>
             <Form.Field>
               <Input
-                onChange={event => setPassword(event.target.value)}
+                onChange={(event) => setPassword(event.target.value)}
                 icon="lock"
                 iconPosition="left"
                 placeholder="Passwort"

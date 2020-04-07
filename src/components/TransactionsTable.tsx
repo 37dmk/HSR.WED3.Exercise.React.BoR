@@ -1,8 +1,16 @@
 import React from "react";
 import { Table } from "semantic-ui-react";
 import Moment from "moment";
+import { Transaction, User } from "../api";
 
-function TransactionsTable({ transactions, user, children }) {
+type Props = {
+  transactions: Transaction[];
+  user?: User;
+  children?: any;
+  paragraph?: string;
+};
+
+function TransactionsTable({ transactions, user, children }: Props) {
   return (
     <Table definition>
       <Table.Header>
@@ -18,7 +26,12 @@ function TransactionsTable({ transactions, user, children }) {
       <Table.Body>
         {transactions.map(({ from, target, amount, total, date }, index) => {
           const momentDate = Moment(date).format("D.M.YYYY");
-          const kind = from === user.accountNr ? "Belastung" : "Gutschrift";
+          const kind =
+            user !== undefined
+              ? from === user.accountNr
+                ? "Belastung"
+                : "Gutschrift"
+              : "";
           return (
             <Table.Row key={index}>
               <Table.Cell textAlign="left">

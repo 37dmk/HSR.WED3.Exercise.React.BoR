@@ -4,7 +4,7 @@ import { Button, Grid, Header } from "semantic-ui-react";
 import { Segment } from "semantic-ui-react";
 import { Redirect } from "react-router";
 
-const Home = ({ isAuthenticated }) => (
+const Home = ({ isAuthenticated }: { isAuthenticated: boolean }) => (
   <Grid className="HomeScreen" verticalAlign="middle" centered={true}>
     <Grid.Column>
       <Header as="h2" content="Bank of Rapperswil" />

@@ -1,25 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent, SyntheticEvent } from "react";
 import { Button, Form, Message } from "semantic-ui-react";
+import { AccountNr } from "../api";
+
+type Props = {
+  accountNr: AccountNr;
+  balance: number;
+  onSubmit: (to: AccountNr, amount: number) => void;
+  isValidTargetAccount: (to: AccountNr) => Promise<boolean>;
+};
 
 function TransferFundsForm({
   accountNr,
   balance,
   onSubmit,
-  isValidTargetAccount
-}) {
+  isValidTargetAccount,
+}: Props) {
   const [to, setTo] = useState("");
   const [amount, setAmount] = useState(0);
   const [error, setError] = useState(undefined);
   const [loading, setLoading] = useState(false);
   const [valid, setValid] = useState(true);
 
-  const handleSubmit = event => {
+  const handleSubmit = (event: SyntheticEvent) => {
     event.preventDefault();
     setLoading(true);
     onSubmit(to, amount);
   };
 
-  const handleAccountChanged = event => {
+  const handleAccountChanged = (event: ChangeEvent<HTMLInputElement>) => {
     const to = event.target.value;
     setTo(to);
     isValidTargetAccount(to).then(setValid);
@@ -55,7 +63,7 @@ function TransferFundsForm({
         placeholder="Betrag"
         type="number"
         value={amount}
-        onChange={event => setAmount(event.target.value)}
+        onChange={(event) => setAmount(parseInt(event.target.value, 10))}
       />
       <Message error header="Überweisung fehlgeschlagen" content={error} />
       <Button

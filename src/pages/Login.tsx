@@ -1,19 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, SyntheticEvent } from "react";
 import { Redirect, Link } from "react-router-dom";
 import { Button, Grid, Header } from "semantic-ui-react";
 import { Form, Segment, Input, Message } from "semantic-ui-react";
 
-function Login({ location, authenticate }) {
+type Props = {
+  location: any;
+  authenticate: (
+    login: string,
+    password: string,
+    onError: (error: Error | null) => void
+  ) => void;
+};
+
+function Login({ location, authenticate }: Props) {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(undefined);
+  const [error, setError] = useState<Error | undefined>(undefined);
   const [redirectToReferrer, setRedirectToReferrer] = useState(false);
 
-  const onSubmit = event => {
+  const onSubmit = (event: SyntheticEvent) => {
     event.preventDefault();
     setLoading(true);
-    authenticate(login, password, error => {
+    authenticate(login, password, (error: Error | null) => {
       setLoading(false);
       if (error) {
         setError(error);
@@ -25,7 +34,7 @@ function Login({ location, authenticate }) {
   };
 
   const { from } = location.state || {
-    from: { pathname: "/dashboard" }
+    from: { pathname: "/dashboard" },
   };
 
   if (redirectToReferrer) {
@@ -36,12 +45,12 @@ function Login({ location, authenticate }) {
     <Grid className="LoginScreen" verticalAlign="middle" centered={true}>
       <Grid.Column>
         <Header as="h2" content="Bank of Rapperswil" />
-        <Form size="large" error={error}>
+        <Form size="large" error={!!error}>
           <Segment stacked={true}>
             <Header as="h3" content="Einloggen" />
             <Form.Field>
               <Input
-                onChange={event => setLogin(event.target.value)}
+                onChange={(event) => setLogin(event.target.value)}
                 icon="user"
                 iconPosition="left"
                 placeholder="Login"
@@ -50,7 +59,7 @@ function Login({ location, authenticate }) {
             </Form.Field>
             <Form.Field>
               <Input
-                onChange={event => setPassword(event.target.value)}
+                onChange={(event) => setPassword(event.target.value)}
                 icon="lock"
                 iconPosition="left"
                 placeholder="Password"
