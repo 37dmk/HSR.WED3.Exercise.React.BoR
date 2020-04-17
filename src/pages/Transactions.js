@@ -5,38 +5,16 @@ import {
   Dimmer,
   Loader,
   Segment,
-  Dropdown,
   Button,
-  Menu,
-  Icon
 } from "semantic-ui-react";
 import Moment from "moment";
 
-import TransactionsTable from "../components/TransactionsTable";
+// import TransactionsTable from "../components/TransactionsTable";
+import { PaginatedTransactionsTable } from "../components/PaginatedTransactionsTable";
+import { MonthDropdown } from "../components/MonthDropdown";
+import { YearDropdown } from "../components/YearDropdown";
 
 import { getTransactions } from "../api";
-
-const currentYear = new Date().getFullYear();
-
-const yearOptions = [currentYear - 2, currentYear - 1, currentYear].map(y => ({
-  value: y,
-  text: y
-}));
-
-const monthOptions = [
-  "Januar",
-  "Februar",
-  "März",
-  "April",
-  "Mai",
-  "Juni",
-  "Juli",
-  "August",
-  "September",
-  "Oktober",
-  "November",
-  "Dezember"
-].map((m, i) => ({ value: i + 1, text: m }));
 
 class Transactions extends React.Component {
   itemsPerPage = 10;
@@ -108,7 +86,6 @@ class Transactions extends React.Component {
     const {
       transactions,
       filterByMonth,
-      filterByYear,
       skip,
       total
     } = this.state;
@@ -130,66 +107,39 @@ class Transactions extends React.Component {
         <Segment>
           <Grid>
             <Grid.Column width={8}>
-              <Dropdown
+              <YearDropdown
                 onChange={this.handleYearFilterChanged}
-                value={filterByYear}
-                placeholder="Nach Jahr Filtern"
-                fluid
-                search
-                selection
-                options={yearOptions}
               />
             </Grid.Column>
             <Grid.Column width={7}>
-              <Dropdown
-                onChange={this.handleMonthFilterChanged}
-                value={filterByMonth}
-                placeholder="Nach Monat Filtern"
-                fluid
-                search
-                selection
-                options={monthOptions}
-              />
+            <MonthDropdown
+             onChange={this.handleMonthFilterChanged}
+             value={filterByMonth}
+             />
             </Grid.Column>
             <Grid.Column width={1}>
               <Button fluid icon="remove" onClick={this.handleClearFilters} />
             </Grid.Column>
           </Grid>
           {transactions.length > 0 ? (
-            <TransactionsTable user={user} transactions={transactions}>
-              <Menu floated="right" pagination>
-                <Menu.Item
-                  as={Button}
-                  disabled={skip === 0}
-                  icon
-                  onClick={() =>
-                    this.setState(
-                      { skip: skip - this.itemsPerPage },
-                      this.fetchTransactions
-                    )
-                  }
-                >
-                  <Icon name="left chevron" />
-                </Menu.Item>
-                <Menu.Item disabled>
-                  Transaktionen {skip + 1} bis {skip + transactions.length} von{" "}
-                  {total}
-                </Menu.Item>
-                <Menu.Item
-                  as={Button}
-                  disabled={skip + transactions.length >= total}
-                  icon
-                  onClick={() =>
-                    this.setState(
-                      { skip: skip + this.itemsPerPage },
-                      this.fetchTransactions
-                    )
-                  }
-                >
-                  <Icon name="right chevron" />
-                </Menu.Item>
-              </Menu>
-            </TransactionsTable>
+            <PaginatedTransactionsTable
+              user={user}
+              transactions={transactions}
+              skip={skip}
+              total={total}
+              onBack={() =>
+                this.setState(
+                  { skip: skip - this.itemsPerPage },
+                  this.fetchTransactions
+                )
+              }
+              onForward={() =>
+                this.setState(
+                  { skip: skip + this.itemsPerPage },
+                  this.fetchTransactions
+                )
+              }
+              />
           ) : (
             <p>In diesem Zeitraum wurden keine Transaktionen getätigt</p>
           )}

@@ -2,9 +2,7 @@ import React from "react";
 import { Table } from "semantic-ui-react";
 import Moment from "moment";
 
-class TransactionsTable extends React.Component {
-  render() {
-    const { transactions, user, children } = this.props;
+function TransactionsTable({ transactions, user, children }) {
     return (
       <Table definition>
         <Table.Header>
@@ -41,7 +39,6 @@ class TransactionsTable extends React.Component {
         </Table.Body>
       </Table>
     );
-  }
 }
 
 export default TransactionsTable;
